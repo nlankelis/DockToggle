@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain
+        run: swift --version
+
+      - name: Check build script syntax
+        run: bash -n scripts/build-app.sh scripts/test.sh
+
+      - name: Run core tests
+        run: ./scripts/test.sh
+
+      - name: Run core tests with Thread Sanitizer
+        run: ./scripts/test.sh --sanitize=thread --scratch-path .build/thread-sanitizer
+
+      - name: Build debug app
+        run: DOCKTOGGLE_CONFIGURATION=debug ./scripts/build-app.sh
+
+      - name: Build release app
+        run: ./scripts/build-app.sh
+
+      - name: Validate bundle
+        run: |
+          plutil -lint build/DockToggle.app/Contents/Info.plist
+          codesign --verify --strict build/DockToggle.app
+          build/DockToggle.app/Contents/MacOS/DockToggle --version

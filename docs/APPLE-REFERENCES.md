@@ -6,12 +6,14 @@ The implementation was developed independently using the local Apple SDK headers
 - [CGEvent.tapCreate](https://developer.apple.com/documentation/coregraphics/cgevent/tapcreate(tap:place:options:eventsofinterest:callback:userinfo:)): run-loop installation, options and creation failure.
 - [CGEventType](https://developer.apple.com/documentation/coregraphics/cgeventtype): `tapDisabledByTimeout` and `tapDisabledByUserInput`.
 - [CGRequestListenEventAccess](https://developer.apple.com/documentation/coregraphics/cgrequestlisteneventaccess()): explicit Input Monitoring request; the matching preflight function is declared in `CGEvent.h`.
-- [AXUIElementSetMessagingTimeout](https://developer.apple.com/documentation/applicationservices/1459345-axuielementsetmessagingtimeout): short, process-wide AX messaging timeout using the system-wide element; also documents top-left hit-test coordinates and AX value/action APIs.
+- [AXUIElementSetMessagingTimeout](https://developer.apple.com/documentation/applicationservices/1459345-axuielementsetmessagingtimeout): short, process-wide AX messaging timeout using the system-wide element.
+- [AXUIElementCopyElementAtPosition](https://developer.apple.com/documentation/applicationservices/1462077-axuielementcopyelementatposition): live hit testing using top-left screen coordinates; also declared in the local `AXUIElement.h`.
 - [AXIsProcessTrustedWithOptions](https://developer.apple.com/documentation/applicationservices/1459186-axisprocesstrustedwithoptions): explicit asynchronous Accessibility prompting and non-prompting trust checks.
 - [kAXMinimizedAttribute](https://developer.apple.com/documentation/applicationservices/kaxminimizedattribute): the documented window minimized state.
 - [SMAppService.mainApp](https://developer.apple.com/documentation/servicemanagement/smappservice/mainapp): register the app itself for launch at login.
 - [NSRunningApplication.hide](https://developer.apple.com/documentation/appkit/nsrunningapplication/hide()): app-wide hiding without minimising windows. The SDK notes that success means the request was sent. The live process ID/launch time is checked before the call.
 - [Hide or minimise windows](https://support.apple.com/en-hk/guide/mac-help/mchlb7beb9af/mac): normal Dock activation unhides an app. Hide / Show mode leaves the show click native.
+- [Resetting access to protected resources](https://developer.apple.com/documentation/xcode/resetting-access-to-protected-resources-in-macos): scoped permission resets when a local build's saved grants need to be renewed.
 
 Additional local SDK references: `AXRoleConstants.h` (`kAXDockItemRole`, `kAXApplicationDockItemSubrole`), `AXAttributeConstants.h` (URL, focused window, modal, children, position and size), `AXActionConstants.h` (`kAXRaiseAction`), and `AXUIElement.h` (error handling and attribute writability).
 

@@ -1,6 +1,6 @@
 # Manual verification checklist
 
-All boxes below are **unverified**. Automated tests use a fake window backend; they cannot prove live Dock/AX behaviour. Record a pass/fail, app version, observed differences and date for each row. Do not treat an unchecked row as passed.
+All boxes below are **unchecked**. Basic permission recovery and use were observed/reported, as recorded in [validation](VALIDATION.md), but these scenarios have not been individually verified. Automated tests use a fake window backend; they cannot prove live Dock/AX behaviour. Record a pass/fail, app version, observed differences and date for each row. Do not treat an unchecked row as passed.
 
 Test machine: MacBook Pro, M2 Pro, 32 GB RAM, macOS 26.5.2. Record the build signature/certificate and whether the installed app is debug or release. Keep other Dock-click utilities quit during testing, so each action has one owner. Record your original Dock settings before changing any manually for a test and restore them afterward.
 
@@ -9,7 +9,8 @@ Test machine: MacBook Pro, M2 Pro, 32 GB RAM, macOS 26.5.2. Record the build sig
 - [ ] Build with `./scripts/build-app.sh` and run `./scripts/test.sh`; capture terminal results. Open the bundled app, not `.build/.../DockToggle`.
 - [ ] With permissions absent, the menu shows the missing permissions and the listener waits. Native Dock interaction works normally; no automatic permission dialog appears.
 - [ ] Select each permission row. Verify the explanation and correct Settings panel; grant both to the installed app, restart it if macOS requests that, then verify “Granted” and “Listener: Listening”.
-- [ ] If the app is missing from a permission list, use its **+** button to add the running `DockToggle.app` manually. For a workspace build under hidden `.codex`, use Command–Shift–G to reach its `build` folder. Verify that adding/enabling the app and reopening it updates the menu's permission state.
+- [ ] If the app is missing from a permission list, use its **+** button to add the running `DockToggle.app` manually. For the recommended install, use Command–Shift–G to reach `~/Applications`. Verify that adding/enabling the app and reopening it updates the menu's permission state.
+- [ ] After replacing an ad-hoc build, verify whether previous grants still match. If switches are on but status remains Required, follow the README's scoped reset procedure, grant fresh access to the installed copy, and record its own menu/log status after reopening. Do not treat a CLI process's inherited permissions as the installed app's grants.
 - [ ] Disable from the menu during activity. New custom operations stop, and remembered minimized windows remain available for normal Dock restoration. Re-enable and verify a new ordinary window can toggle.
 - [ ] Set Launch at Login and inspect General → Login Items. If approval is required, verify the menu's mixed/awaiting state and Settings link. Log out/in (after saving work) to verify one menu bar instance starts. Turn Launch at Login off and verify it is removed.
 - [ ] Open a second copy with the same bundle identifier. Verify there is one menu item/listener. Quit from the menu; verify the process and menu item disappear and clicks remain native.
@@ -58,6 +59,7 @@ Repeat these checks in both modes where applicable.
 
 ## Responsiveness and recovery
 
+- [ ] Compare switching between the same ordinary apps with DockToggle enabled, disabled and quit. Keep Dock settings, app windows and Spaces unchanged. Record each condition separately to investigate the reported delay; do not assume it originates in either DockToggle or macOS.
 - [ ] Repeated clicks at ordinary speed: record successful custom actions versus attempts. Separately test very short clicks; unfinished preflight is deliberately skipped. A skipped custom action must never become a delayed minimize later.
 - [ ] Make bursts at several rates on one icon and alternating icons, then stop. Superseded work may be skipped. No custom action sequence should replay after the burst. New AX requests must not start beyond the final click's 250 ms release deadline; native/AX animations already accepted can finish later.
 - [ ] Repeat under normal CPU load and with an unresponsive test app (use a disposable test process, not unsaved work). The mouse/Dock should stay responsive; a failing AX read should affect only the current custom action. Other icons must recover on a subsequent ordinary click.
@@ -73,7 +75,7 @@ Repeat these checks in both modes where applicable.
 
 ## Evidence to capture
 
-Use `--diagnose` for a prompt-free permission check and `log stream --style compact --predicate 'subsystem == "dev.nojusl.DockToggle"'` for listener/outcome logs. For live latency and hit-rate measurement, use a screen recording or Instruments locally after obtaining any permissions those tools require. Record native animation time separately from callback/AX request time; no quantitative responsiveness claim is established by the unit tests.
+Use the running app's menu and permission logs to confirm its grants. `--diagnose` is prompt-free but may inherit its launcher's permission context. Use `log stream --style compact --predicate 'subsystem == "dev.nojusl.DockToggle"'` for listener/outcome logs. For live latency and hit-rate measurement, use a screen recording or Instruments locally after obtaining any permissions those tools require. Record native animation time separately from callback/AX request time; no quantitative responsiveness claim is established by the unit tests.
 
 | Build/date | Scenario | App + Dock settings | Pass/fail | Expected/observed difference | Evidence |
 | --- | --- | --- | --- | --- | --- |
